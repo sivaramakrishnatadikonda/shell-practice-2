@@ -5,7 +5,7 @@ LOGS_FOLDER="var/log/shell-practice-logs"
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 LOG_FILE="$LOG_FOLDER/$SCRIPT_NAME.log"
 SCRIPT_DIR=$PWD
-PACKAGE=( "mongodb" "nginx" "nodejs" "rebbitmq" )
+
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
@@ -45,15 +45,15 @@ done
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 
 dnf install mongodb-org -y &&>>LOG_FILE 
-VALIDATE $? "installing the mongodb" 
+VALIDATE $? "Installing Mongodb Server" 
 
 systemctl enable mongod &&>>LOG_FILE
-VALIDATE $? "enable the mongodb" 
+VALIDATE $? "Enable Mongodb Server" 
 
 systemctl start mongod &&>>LOG_FILE
-VALIDATE $? "start the mongodb server" 
+VALIDATE $? "Start the Mongodb Server" 
 
 sed -i 's/127.0.0.1/0.0.0.0' /etc/mongod.conf # perminatly replace the 0.0.0.0 in config file
 
 systemctl restart mongod &&>>LOG_FILE
-VALIDATE $? "restart the mongodb server" 
+VALIDATE $? "Restart the Mongodb Server" 
