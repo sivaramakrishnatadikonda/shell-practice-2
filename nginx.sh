@@ -5,7 +5,7 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m" # colors
 
-LOGS_FOLDER="var/log/nginx-logs" #store the logs
+LOGS_FOLDER="var/log/roboshop-logs" #store the logs
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1) # remove the . extenstion
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # add the .log on end
 SCRPIT_DIR=$PWD
