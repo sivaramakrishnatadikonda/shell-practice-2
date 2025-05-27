@@ -31,17 +31,25 @@ fi
 }
 
 for package in $@
+
 do
+
 dnf list module $package
+
 if [ $? -eq 0 ]
+
 then 
     echo "Installation is not completed pleaase compelted"
+
 dnf install $package -y
+
 VALIDATION $? "$package"
+
 else
     echo "Instalation is already completed please $Y skipped $N "
 fi
 done
+
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 
 dnf install mongodb-org -y &&>>LOG_FILE 
