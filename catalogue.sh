@@ -79,5 +79,12 @@ cp $SCRPIT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 dnf install mongodb-mongosh -y &&>>LOG_FILE
 VALIDATE $? "Install client Server"
 
-mongosh --host mongodb.tadikondadevops.site </app/db/master-data.js &&>>LOG_FILE
-VALIDATE $? "Load Master Data"
+
+STATUS=$(mongosh --host mongodb.tadikondadevops.site --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
+if [ $STATUS -lt 0 ]
+then
+    mongosh --host mongodb.tadikondadevops.site </app/db/master-data.js &>>$LOG_FILE
+    VALIDATE $? "Loading data into MongoDB"
+else
+    echo -e "Data is already loaded ... $Y SKIPPING $N"
+fi
