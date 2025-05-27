@@ -8,7 +8,6 @@ N="\e[0m"
 LOGS_FOLDER="var/log/roboshop-logs" # store the longs
 SCRIPT_NAME=$(echo $0 | cut -d "."  -f1) # remove the .extenstion
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
-SCRPIT_DIR=$PWD
 
 mkdir -p $LOGS_FOLDER # create parent directory
 echo "Script started executing at : $(date)" | tee -a $LOG_FILE # append
@@ -21,6 +20,7 @@ then
 else
     echo "You are running with root access" | tee -a $LOG_FILE #append
 fi
+
 # validate functions takes input as exit status, what command they tried to install
 VALIDATE(){
     if [ $1 -eq 0 ]
@@ -32,7 +32,7 @@ VALIDATE(){
     fi
 }
 
-cp $SCRPIT_DIR/mongo.repo /etc/yum.repos.d/mongodb.repo
+cp mongo.repo /etc/yum.repos.d/mongodb.repo
 VALIDATE $? "Copying MongoDB repo"
 
 dnf install mongodb-org -y &>>$LOG_FILE #stored output
@@ -49,3 +49,4 @@ VALIDATE $? "Editing MongoDB conf file for remote connections"
 
 systemctl restart mongod &>>$LOG_FILE #stored output
 VALIDATE $? "Restarting MongoDB"
+
