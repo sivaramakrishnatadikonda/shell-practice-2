@@ -10,7 +10,7 @@ SCRIPT_NAME=$(echo $0 | cut -d "." -f1) # remove the . extenstion
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # add the .log on end
 SCRPIT_DIR=$PWD
 
-mkdir  $LOGS_FOLDER  #if already direcotry created ok otherwise created
+mkdir -p $LOGS_FOLDER  #if already direcotry created ok otherwise created
 echo "script started executing : $(date)" | tee -a $LOG_FILE #append the data in log file
 
 
@@ -44,7 +44,7 @@ VALIDATE $? "Nodejs Enable"
 dnf install nodejs -y &&>>LOG_FILE
 VALIDATE $? "Install Nodejs"
 
-if [ $? -!= 0 ]
+if [ $? != 0 ]
 then 
     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &&>>LOG_FILE
     VALIDATE $? "Roboshop System User"
