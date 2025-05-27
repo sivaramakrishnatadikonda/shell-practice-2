@@ -16,7 +16,7 @@ echo "script started executing : $(date)" | tee -a $LOG_FILE #append the data in
 
 if [ $USERID != 0 ]
 then
-    echo "ERROR:: please script run in the root access"
+    echo " $R ERROR:: please script run in the root access $N " | tee -a $LOG_FILE 
     exit 1 # filed the script it will use
 else   
     echo "your script runing in the root access"
@@ -27,9 +27,9 @@ VALIDATE(){
 
     if [ $1 -eq 0 ]
 then 
-    echo " $2 Installation ----- $G Sucessfully $N " # green color provided on sucessfully word
+    echo " $2 Installation ----- $G Sucessfully $N " | tee -a $LOG_FILE #append # green color provided on sucessfully word
 else   
-    echo "$2 Installation ------ $R Failed $N " #Red color provided on failed word
+    echo " $2 Installation ------ $R Failed $N "  | tee -a $LOG_FILE #append#Red color provided on failed word
     exit 1 # exit 1 indicates faild the script
 fi
     
@@ -74,9 +74,3 @@ VALIDATE $? "Install client Server"
 
 mongosh --host mongodb.tadikondadevops.site </app/db/master-data.js &&>>LOG_FILE
 VALIDATE $? "Load Master Data"
-
-mongosh --host mongodb.tadikondadevops.site &&>>LOG_FILE
-VALIDATE $? "Master Data Is loaded or not "
-
-
-
