@@ -44,6 +44,7 @@ VALIDATE $? "Nodejs Enable"
 dnf install nodejs -y &&>>LOG_FILE
 VALIDATE $? "Install Nodejs"
 
+id roboshop
 if [ $? != 0 ]
 then 
     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &&>>LOG_FILE
@@ -51,6 +52,7 @@ then
 else 
     echo "otherwise Skip"
 fi
+
 
 mkdir -p /app
 VALIDATE $? "Create App Directory"
