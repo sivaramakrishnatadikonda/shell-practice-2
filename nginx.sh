@@ -55,7 +55,7 @@ systemctl start nginx &>>$LOG_FILE
 VALIDATE $? "Start Nginx"
 
 rm -rf /usr/share/nginx/html/* 
-VALIDATE $? "Remove Previous html file"
+VALIDATE $? "Remove default nginx conf"
 
 curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
 VALIDATE $? "Dowanload Code"
