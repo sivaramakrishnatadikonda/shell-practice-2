@@ -16,7 +16,7 @@ echo "script started executing : $(date)" | tee -a $LOG_FILE #append the data in
 
 if [ $USERID != 0 ]
 then
-    echo " $R ERROR:: please script run in the root access $N " | tee -a $LOG_FILE 
+    echo -e "$R ERROR:: Please run this script with root access $N" | tee -a $LOG_FILE #append
     exit 1 # filed the script it will use
 else   
     echo "your script runing in the root access"
@@ -27,10 +27,10 @@ VALIDATE(){
 
     if [ $1 -eq 0 ]
 then 
-    echo " $2 Installation ----- $G Sucessfully $N " | tee -a $LOG_FILE #append # green color provided on sucessfully word
-else   
-    echo " $2 Installation ------ $R Failed $N "  | tee -a $LOG_FILE #append#Red color provided on failed word
-    exit 1 # exit 1 indicates faild the script
+        echo -e "$2 is ... $G SUCCESS $N" | tee -a $LOG_FILE #append
+else
+        echo -e "$2 is ... $R FAILURE $N" | tee -a $LOG_FILE #append
+        exit 1 # exit 1 indicates faild the script
 fi
     
 }
