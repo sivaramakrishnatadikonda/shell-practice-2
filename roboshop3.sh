@@ -2,6 +2,7 @@ AMI="ami-09c813fb71547fc4f"
 SG_ID="sg-0063ebc81c5fcfe82"
 ZONE_ID="Z066140621FS3C4YYVXA1"
 DOMIN_NAME="tadikondadevops.site"
+INSTANCES=( "mongodb" "redis" "mysql" )
 
 for instance in $@
 do
@@ -15,7 +16,6 @@ do
         RECORD_NAME="$DOMAIN_NAME"
     fi
     echo "$instance IP address: $IP"
-
     aws route53 change-resource-record-sets \
     --hosted-zone-id $ZONE_ID \
     --change-batch '
