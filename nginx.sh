@@ -1,72 +1,66 @@
 #!/bin/bash
-USERID=$(id -u) # user id creation
+
+USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
-N="\e[0m" # colors
+N="\e[0m"
+LOGS_FOLDER="/var/log/roboshop-logs"
+SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
+LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
+SCRIPT_DIR=$PWD
 
-LOGS_FOLDER="var/log/roboshop-logs" #store the logs
-SCRIPT_NAME=$(echo $0 | cut -d "." -f1) # remove the . extenstion
-LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # add the .log on end
-SCRPIT_DIR=$PWD
+mkdir -p $LOGS_FOLDER
+echo "Script started executing at: $(date)" | tee -a $LOG_FILE
 
-mkdir -p $LOGS_FOLDER #if already direcotry created ok otherwise created
-echo "script started executing : $(date)" | tee -a $LOG_FILE #append the data in log file
-
-
-if [ $USERID != 0 ]
+# check the user has root priveleges or not
+if [ $USERID -ne 0 ]
 then
-    echo -e "$R ERROR:: Please run this script with root access $N" | tee -a $LOG_FILE #append
-    exit 1 # filed the script it will use
-else   
-    echo "your script runing in the root access"
-
-fi
-
-VALIDATE(){
-
-    if [ $1 -eq 0 ]
-then 
-        echo -e "$2 is ... $G SUCCESS $N" | tee -a $LOG_FILE #append
+    echo -e "$R ERROR:: Please run this script with root access $N" | tee -a $LOG_FILE
+    exit 1 #give other than 0 upto 127
 else
-        echo -e "$2 is ... $R FAILURE $N" | tee -a $LOG_FILE #append
-        exit 1 # exit 1 indicates faild the script
+    echo "You are running with root access" | tee -a $LOG_FILE
 fi
-    
+
+# validate functions takes input as exit status, what command they tried to install
+VALIDATE(){
+    if [ $1 -eq 0 ]
+    then
+        echo -e "$2 is ... $G SUCCESS $N" | tee -a $LOG_FILE
+    else
+        echo -e "$2 is ... $R FAILURE $N" | tee -a $LOG_FILE
+        exit 1
+    fi
 }
 
-dnf module list nginx &>>$LOG_FILE
-VALIDATE $? "Module List of Nginx"
-
 dnf module disable nginx -y &>>$LOG_FILE
-VALIDATE $? "Disable Nginx"
+VALIDATE $? "Disabling Default Nginx"
 
 dnf module enable nginx:1.24 -y &>>$LOG_FILE
-VALIDATE $? "Enable Nginx:1.24 Version"
+VALIDATE $? "Enabling Nginx:1.24"
 
 dnf install nginx -y &>>$LOG_FILE
-VALIDATE $? "Install Nginx"
+VALIDATE $? "Installing Nginx"
 
+systemctl enable nginx  &>>$LOG_FILE
+systemctl start nginx 
+VALIDATE $? "Starting Nginx"
 
-systemctl enable nginx &>>$LOG_FILE
-VALIDATE $? "Enable Nginx"
+rm -rf /usr/share/nginx/html/* &>>$LOG_FILE
+VALIDATE $? "Removing default content"
 
-systemctl start nginx &>>$LOG_FILE
-VALIDATE $? "Start Nginx"
-
-rm -rf /usr/share/nginx/html/* 
-VALIDATE $? "Remove default nginx conf"
-
-curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
-VALIDATE $? "Dowanload Code"
+curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip &>>$LOG_FILE
+VALIDATE $? "Downloading frontend"
 
 cd /usr/share/nginx/html 
-unzip /tmp/frontend.zip
-VALIDATE $? "Unzip Code"
+unzip /tmp/frontend.zip &>>$LOG_FILE
+VALIDATE $? "unzipping frontend"
 
 rm -rf /etc/nginx/nginx.conf &>>$LOG_FILE
 VALIDATE $? "Remove default nginx conf"
 
-cp $SCRPIT_DIR/nginx.conf /etc/nginx/nginx.conf
-systemctl restart nginx &&>>LOG_FILE
-VALIDATE $? "Restart Nginx"
+cp $SCRIPT_DIR/nginx.conf /etc/nginx/nginx.conf
+VALIDATE $? "Copying nginx.conf"
+
+systemctl restart nginx 
+VALIDATE $? "Restarting nginx"
