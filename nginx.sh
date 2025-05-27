@@ -65,6 +65,6 @@ unzip /tmp/frontend.zip
 VALIDATE $? "Unzip Code"
 
 
-cp $SCRPIT_DIR/nginx.conf /etc/nginx/nginx.conf
+cp $SCRPIT_DIR/nginx.config /etc/nginx/nginx.conf
 systemctl restart nginx &&>>LOG_FILE
 VALIDATE $? "Restart Nginx"
