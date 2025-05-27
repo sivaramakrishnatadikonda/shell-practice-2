@@ -30,38 +30,27 @@ fi
 
 }
 
-for package in $@
-
-do
-
-dnf list module $package
-
 if [ $? -eq 0 ]
 
 then 
     echo "Installation is not completed pleaase compelted"
 
-dnf install $package -y
-
-VALIDATION $? "$package"
-
 else
     echo "Instalation is already completed please $Y skipped $N "
 fi
-done
 
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 
 dnf install mongodb-org -y &&>>LOG_FILE 
-VALIDATE $? "$package" 
+VALIDATE $? "Installing Mongodb Server" 
 
 systemctl enable mongod &&>>LOG_FILE
-VALIDATE $? "$package" 
+VALIDATE $? "Enable Mongodb Server" 
 
 systemctl start mongod &&>>LOG_FILE
-VALIDATE $? "$package" 
+VALIDATE $? "Start Mongodb Server" 
 
 sed -i 's/127.0.0.1/0.0.0.0' /etc/mongod.conf # perminatly replace the 0.0.0.0 in config file
 
 systemctl restart mongod &&>>LOG_FILE
-VALIDATE $? "$package" 
+VALIDATE $? "Restart Mongodb Server" 
