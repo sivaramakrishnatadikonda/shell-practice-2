@@ -35,23 +35,23 @@ fi
     
 }
 
-dnf module list nginx
+dnf module list nginx &>>$LOG_FILE
 VALIDATE $? "Module List of Nginx"
 
-dnf module disable nginx -y
+dnf module disable nginx -y &>>$LOG_FILE
 VALIDATE $? "Disable Nginx"
 
-dnf module enable nginx:1.24 -y
+dnf module enable nginx:1.24 -y &>>$LOG_FILE
 VALIDATE $? "Enable Nginx:1.24 Version"
 
-dnf install nginx -y
+dnf install nginx -y &>>$LOG_FILE
 VALIDATE $? "Install Nginx"
 
 
-systemctl enable nginx 
+systemctl enable nginx &>>$LOG_FILE
 VALIDATE $? "Enable Nginx"
 
-systemctl start nginx 
+systemctl start nginx &>>$LOG_FILE
 VALIDATE $? "Start Nginx"
 
 rm -rf /usr/share/nginx/html/* 
@@ -64,6 +64,8 @@ cd /usr/share/nginx/html
 unzip /tmp/frontend.zip
 VALIDATE $? "Unzip Code"
 
+rm -rf /etc/nginx/nginx.conf &>>$LOG_FILE
+VALIDATE $? "Remove default nginx conf"
 
 cp $SCRPIT_DIR/nginx.config /etc/nginx/nginx.conf
 systemctl restart nginx &&>>LOG_FILE
