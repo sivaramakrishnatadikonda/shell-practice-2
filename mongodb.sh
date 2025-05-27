@@ -1,56 +1,50 @@
 #!/bin/bash
-
 USERID=$(id -u)
-LOGS_FOLDER="var/log/shell-practice-logs"
-SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
-LOG_FILE="$LOG_FOLDER/$SCRIPT_NAME.log"
-SCRIPT_DIR=$PWD
-
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
+LOGS_FOLDER="var/log/roboshop-logs" # store the longs
+SCRIPT_NAME=$(echo $0 | cut -d "."  -f1) # remove the .extenstion
+LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
+
+mkdir -p $LOGS_FOLDER # create parent directory
+echo "Script started executing at : $(date)" | tee -a $LOG_FILE # append
+
+# check the user has root priveleges or not
 if [ $USERID -ne 0 ]
-then 
-    echo "ERROR:: please run the script in root access"
-    exit 1
+then
+    echo -e "$R ERROR:: Please run this script with root access $N" | tee -a $LOG_FILE #append
+    exit 1 #exit status give other than 0 upto 127
 else
-    echo "your are in root access"
+    echo "You are running with root access" | tee -a $LOG_FILE #append
 fi
-VALIDATION(){
-
-if [ $! -eq 0 ]
-then 
-     echo " $2  Installation ---------  $G sucessfully $N " 
-else
-     echo "$2 Installation -------- $R Failed $N "
-     exit 1
-fi 
-
+# validate functions takes input as exit status, what command they tried to install
+VALIDATE(){
+    if [ $1 -eq 0 ]
+    then
+        echo -e "$2 is ... $G SUCCESS $N" | tee -a $LOG_FILE #append
+    else
+        echo -e "$2 is ... $R FAILURE $N" | tee -a $LOG_FILE #append
+        exit 1 # exit status code is filed"
+    fi
 }
 
-if [ $? -eq 0 ]
+cp mongo.repo /etc/yum.repos.d/mongodb.repo
+VALIDATE $? "Copying MongoDB repo"
 
-then 
-    echo "Installation is not completed pleaase compelted"
+dnf install mongodb-org -y &>>$LOG_FILE #stored output
+VALIDATE $? "Installing mongodb server"
 
-else
-    echo "Instalation is already completed please $Y skipped $N "
-fi
+systemctl enable mongod &>>$LOG_FILE #stored output
+VALIDATE $? "Enabling MongoDB"
 
-cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+systemctl start mongod &>>$LOG_FILE #stored output
+VALIDATE $? "Starting MongoDB"
 
-dnf install mongodb-org -y &&>>LOG_FILE 
-VALIDATE $? "Installing Mongodb Server" 
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf # -i perminatly changed
+VALIDATE $? "Editing MongoDB conf file for remote connections"
 
-systemctl enable mongod &&>>LOG_FILE
-VALIDATE $? "Enable Mongodb Server" 
-
-systemctl start mongod &&>>LOG_FILE
-VALIDATE $? "Start Mongodb Server" 
-
-sed -i 's/127.0.0.1/0.0.0.0' /etc/mongod.conf # perminatly replace the 0.0.0.0 in config file
-
-systemctl restart mongod &&>>LOG_FILE
-VALIDATE $? "Restart Mongodb Server" 
+systemctl restart mongod &>>$LOG_FILE #stored output
+VALIDATE $? "Restarting MongoDB"
