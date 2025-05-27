@@ -8,6 +8,7 @@ N="\e[0m"
 LOGS_FOLDER="var/log/roboshop-logs" # store the longs
 SCRIPT_NAME=$(echo $0 | cut -d "."  -f1) # remove the .extenstion
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
+SCRPIT_DIR=$PWD
 
 mkdir -p $LOGS_FOLDER # create parent directory
 echo "Script started executing at : $(date)" | tee -a $LOG_FILE # append
@@ -31,7 +32,7 @@ VALIDATE(){
     fi
 }
 
-cp mongo.repo /etc/yum.repos.d/mongodb.repo
+cp $SCRPIT_DIR/mongo.repo /etc/yum.repos.d/mongodb.repo
 VALIDATE $? "Copying MongoDB repo"
 
 dnf install mongodb-org -y &>>$LOG_FILE #stored output

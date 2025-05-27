@@ -10,7 +10,7 @@ SCRIPT_NAME=$(echo $0 | cut -d "." -f1) # remove the . extenstion
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # add the .log on end
 SCRPIT_DIR=$PWD
 
-mkdir -p $LOGS_FOLDER #if already direcotry created ok otherwise created
+mkdir  $LOGS_FOLDER  #if already direcotry created ok otherwise created
 echo "script started executing : $(date)" | tee -a $LOG_FILE #append the data in log file
 
 
@@ -77,6 +77,7 @@ systemctl start catalogue  &&>>LOG_FILE
 VALIDATE $? "Start Catalogue Service"
 
 cp $SCRPIT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+
 
 dnf install mongodb-mongosh -y &&>>LOG_FILE
 VALIDATE $? "Install client Server"
