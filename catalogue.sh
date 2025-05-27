@@ -27,9 +27,9 @@ VALIDATE(){
 
     if [ $1 -eq 0 ]
 then 
-    echo " $2 Installation -----$G Sucessfully $N" # green color provided on sucessfully word
+    echo " $2 Installation ----- $G Sucessfully $N " # green color provided on sucessfully word
 else   
-    echo "$2 Installation ------ $R Failed $N" #Red color provided on failed word
+    echo "$2 Installation ------ $R Failed $N " #Red color provided on failed word
     exit 1 # exit 1 indicates faild the script
 fi
     
